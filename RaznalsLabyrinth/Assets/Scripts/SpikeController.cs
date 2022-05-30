@@ -10,21 +10,39 @@ public class SpikeController : MonoBehaviour
     public List<Tile> spikeTiles;
     private int tileMinX, tileMaxX, tileMinY, tileMaxY;
     private int currentTileAnimation, currentFrame;
-    private int[] randomPos, currentY;
-    private bool[] activeLines;
+    private int offsetLines;
+    private List<int> randomPos, currentY;
+    private List<bool> activeLines;
+    
     void Start()
     {
         tileMinX = tileMap.cellBounds.xMin;
         tileMaxX = tileMap.cellBounds.xMax - 1;
         tileMinY = tileMap.cellBounds.yMin;
         tileMaxY = tileMap.cellBounds.yMax - 1;
-        currentY = new int[] { tileMaxY, tileMaxY };
+        randomPos = new List<int>();
+        currentY = new List<int>();
+        activeLines = new List<bool>();
         currentTileAnimation = 0;
         currentFrame = 0;
-        randomPos = new int[] { Random.Range(tileMinX, tileMaxX + 1), 0 };
-        activeLines = new bool [] { true, false};
+        initLines(3);//Number of lines to be spawned
+        offsetLines = tileMaxY + 1 + (int)(Mathf.Abs(tileMinY));
+        offsetLines = (int)(offsetLines / activeLines.Count);
     }
+    private void initLines(int n)
+    {
+        randomPos.Add(Random.Range(tileMinX, tileMaxX + 1));
+        currentY.Add(tileMaxY);
+        activeLines.Add(true);
+        
+        for(int i = 1; i < n; i++)
+        {
+            randomPos.Add(0);
+            currentY.Add(tileMaxY);
+            activeLines.Add(false);
+        }
 
+    }
     private void UpdateAnimationByFrames(int totalFrames)
     {
         if (++currentFrame >= totalFrames)
@@ -37,7 +55,7 @@ public class SpikeController : MonoBehaviour
         {
             currentTileAnimation = 0;
 
-            for(int i = 0; i < currentY.Length; i++)
+            for(int i = 0; i < currentY.Count; i++)
             {
                 if (activeLines[i])
                 {
@@ -52,8 +70,13 @@ public class SpikeController : MonoBehaviour
             }
             
         }
-        if (!activeLines[1] && currentY[0] == 0)
-            activeLines[1] = true;
+        for (int i = 1; i < activeLines.Count; i++)
+        {
+            if(!activeLines[i] && currentY[i-1] == tileMaxY - 1 - offsetLines )
+            {
+                activeLines[i] = true;
+            }
+        }
 
     }
     private void CleanLineOfSpikes(int posY)
@@ -66,7 +89,7 @@ public class SpikeController : MonoBehaviour
     }
     private void DrawLineOfSpikes()
     {
-        for (int j = 0; j < currentY.Length; j++)
+        for (int j = 0; j < currentY.Count; j++)
         {
             if (activeLines[j])
             {
@@ -89,7 +112,7 @@ public class SpikeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateAnimationByFrames(15);
+        UpdateAnimationByFrames(10);
         DrawLineOfSpikes();//15 frames per sprite
     }
 }
