@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other)
-    {
+    {        
         animator.SetTrigger("Death");
         isDeath = true;
     }
