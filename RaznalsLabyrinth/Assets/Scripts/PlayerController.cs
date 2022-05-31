@@ -9,7 +9,8 @@ public class PlayerController : MonoBehaviour
     public float speed = 0.0f;
     public UnityEngine.UI.Image resetImage;
     private float valorAlphaResetImage;
-    private  bool isDeath = false;
+    private bool isDeath = false;
+    private bool interaction = false;
     
     void Update()
     {
@@ -22,7 +23,6 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Vertical", movement.y);
         animator.SetFloat("Magnitude", movement.magnitude);
         transform.position = transform.position + movement * Time.deltaTime * speed;
-        
     }
 
     private void Start()
@@ -32,9 +32,17 @@ public class PlayerController : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other)
-    {        
-        animator.SetTrigger("Death");
-        isDeath = true;
+    {       
+        if(other.tag == "Palanca")
+        {
+            if(!interaction)
+                interaction = true;
+        }
+        else
+        {
+            animator.SetTrigger("Death");
+            isDeath = true;
+        } 
     }
 
     public void iniciarFadeOut()
