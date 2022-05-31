@@ -112,7 +112,7 @@ public class SpikeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateAnimationByFrames(10);
+        UpdateAnimationByFrames(3);
         DrawLineOfSpikes();//15 frames per sprite
     }
 }
